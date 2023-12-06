@@ -22,17 +22,21 @@ find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_eigen REQUIRED)
+find_package(tello_msgs REQUIRED)
+find_package(gazebo_msgs REQUIRED)
 
-add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}.cpp src/${PROJECT_NAME}_node.cpp)
-target_include_directories(${PROJECT_NAME}_node PRIVATE include)
-ament_target_dependencies(${PROJECT_NAME}_node rclcpp geometry_msgs)
+add_executable(cpp_executable src/${PROJECT_NAME}.cpp src/${PROJECT_NAME}_node.cpp)
+target_include_directories(cpp_executable PUBLIC include)
+ament_target_dependencies(cpp_executable rclcpp geometry_msgs tello_msgs tf2_ros gazebo_msgs)
 
 install(TARGETS
-  ${PROJECT_NAME}_node
+  cpp_executable
   DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY launch scripts DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch src scripts DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -46,12 +50,30 @@ if(BUILD_TESTING)
 endif()
 
 # Install Python modules
-ament_python_install_package(scripts)
+# ament_python_install_package(scripts)
+ament_python_install_package(${PROJECT_NAME})
 
+# install(DIRECTORY
+#   launch
+#   src
+#   DESTINATION install/${PROJECT_NAME}
+# )
+# install(DIRECTORY
+#   scripts
+#   DESTINATION install/${PROJECT_NAME}
+# )
 # Install Python executables
 install(PROGRAMS
   scripts/publisher.py
-  DESTINATION lib/${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME}/
 )
+
+
+# Export package dependencies
+ament_export_dependencies(ament_cmake)
+ament_export_dependencies(ament_cmake_python)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(rclpy)
+ament_export_include_directories(include ${rclcpp_INCLUDE_DIRS})
 
 ament_package()

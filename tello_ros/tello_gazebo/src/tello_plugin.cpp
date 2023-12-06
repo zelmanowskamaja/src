@@ -340,7 +340,10 @@ namespace tello_gazebo
 
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
     {
+      RCLCPP_WARN(node_->get_logger(), "cmd_vel_callback");
       if (flight_state_ == FlightState::flying) {
+        RCLCPP_WARN(node_->get_logger(), "cmd_vel_callback 2 ");
+
         // TODO cmd_vel should specify velocity, not joystick position
         set_target_velocities(
           msg->linear.x * MAX_XY_V,
